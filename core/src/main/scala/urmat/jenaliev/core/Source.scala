@@ -1,4 +1,4 @@
-package urmat.jenaliev
+package urmat.jenaliev.core
 
 import org.apache.spark.sql.{Dataset, SparkSession}
 import scala.reflect.runtime.universe._

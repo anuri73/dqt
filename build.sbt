@@ -1,6 +1,3 @@
-import Version._
-import Dependency._
-
 // Seq of 'wartremover' checks, causing compilation fail if found
 lazy val warts = Seq(
   "-P:wartremover:traverser:org.wartremover.warts.FinalCaseClass", // All case classes should be final
@@ -65,7 +62,8 @@ lazy val core = (project in file("core"))
     commonSettings,
     crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
     libraryDependencies ++= Seq(
-      sparkCore(Version.spark.value) % Provided,
-      sparkSql(Version.spark.value)  % Provided
+      Dependency.sparkCore(Version.spark.value) % Provided,
+      Dependency.sparkSql(Version.spark.value)  % Provided,
+      Dependency.scalaTest                      % "test, it"
     )
   )
