@@ -1,5 +1,9 @@
 *.class
 *.log
+target
+# Idea
 .idea
 .bsp
-target
+# VS Code
+.metals
+.bloop
