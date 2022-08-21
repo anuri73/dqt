@@ -1,11 +1,11 @@
 package urmat.jenaliev.core
 
-import java.nio.file.{Files, Path}
-
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 
-object LocalSession {
+import java.nio.file.{Files, Path}
+
+private[jenaliev] object LocalSession {
   lazy val warehouseDir: Path = Files.createTempDirectory("spark-warehouse")
 
   def localSpark: SparkSession = {

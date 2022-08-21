@@ -67,3 +67,20 @@ lazy val core = (project in file("core"))
       Dependency.scalaTest                      % "test, it"
     )
   )
+
+lazy val metrics = (project in file("metrics"))
+  .configs(IntegrationTest.extend(Test))
+  .settings(
+    parallelExecution := true,
+    Defaults.itSettings,
+    IntegrationTest / parallelExecution := false, // disabled in IntegrationTest, due to race condition
+    IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
+    commonSettings,
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    libraryDependencies ++= Seq(
+      Dependency.sparkCore(Version.spark.value) % Provided,
+      Dependency.sparkSql(Version.spark.value)  % Provided,
+      Dependency.scalaTest                      % "test, it"
+    )
+  )
+  .dependsOn(core)
