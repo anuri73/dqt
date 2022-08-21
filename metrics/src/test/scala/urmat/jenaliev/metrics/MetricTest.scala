@@ -28,7 +28,7 @@ final class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
         )
       nullableMetric.collect match {
         case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 0
-        case Failure(_: Throwable)       => None
+        case Failure(_: Throwable)                   => None
       }
     }
     "return 100 on spoiled dataset" in {
@@ -44,7 +44,44 @@ final class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
         )
       nullableMetric.collect match {
         case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 100
-        case Failure(_: Throwable)       => None
+        case Failure(_: Throwable)                   => None
+      }
+    }
+  }
+
+  "SizeMetric" should {
+    "return 0 on correct dataset" in {
+      val sizeMetric = new Size(
+        SampleSource.generate(row =>
+          SimpleStruct(
+            row,
+            if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
+          )
+        ),
+        col("name"),
+        0,
+        1000
+      )
+      sizeMetric.collect match {
+        case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 0
+        case Failure(_: Throwable)                   => None
+      }
+    }
+    "return 900 on overflow dataset" in {
+      val sizeMetric = new Size(
+        SampleSource.generate(row =>
+          SimpleStruct(
+            row,
+            if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
+          )
+        ),
+        col("name"),
+        0,
+        100
+      )
+      sizeMetric.collect match {
+        case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 900
+        case Failure(_: Throwable)                   => None
       }
     }
   }
