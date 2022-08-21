@@ -1,3 +1,5 @@
 package urmat.jenaliev.constraints.exception
 
-final class NullValueException extends Exception {}
+import urmat.jenaliev.core.ConstraintException
+
+final class NullValueException extends ConstraintException {}

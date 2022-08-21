@@ -101,3 +101,39 @@ lazy val constraints = (project in file("constraints"))
     )
   )
   .dependsOn(core, metrics)
+
+lazy val callbacks = (project in file("callbacks"))
+  .configs(IntegrationTest.extend(Test))
+  .settings(
+    parallelExecution := true,
+    Defaults.itSettings,
+    IntegrationTest / parallelExecution := false,
+    IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
+    commonSettings,
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    libraryDependencies ++= Seq(
+      Dependency.sparkCore(Version.spark.value) % Provided,
+      Dependency.sparkSql(Version.spark.value)  % Provided,
+      Dependency.scalaTest                      % "test, it",
+      Dependency.scalaMock                      % Provided
+    )
+  )
+  .dependsOn(core, constraints)
+
+lazy val dqt = (project in file("dqt"))
+  .configs(IntegrationTest.extend(Test))
+  .settings(
+    parallelExecution := true,
+    Defaults.itSettings,
+    IntegrationTest / parallelExecution := false,
+    IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
+    commonSettings,
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    libraryDependencies ++= Seq(
+      Dependency.sparkCore(Version.spark.value) % Provided,
+      Dependency.sparkSql(Version.spark.value)  % Provided,
+      Dependency.scalaTest                      % "test, it",
+      Dependency.mockitoScala                   % "test"
+    )
+  )
+  .dependsOn(core, constraints, callbacks)

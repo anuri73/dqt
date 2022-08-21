@@ -14,35 +14,31 @@ final class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
 
   object SampleSource extends SimpleStructSource(Constants.DefaultRecordAmount)
 
+  val correctDataset: Dataset[SimpleStruct] = SampleSource.generate(row =>
+    SimpleStruct(
+      row,
+      Some(Random.alphanumeric.take(10).mkString)
+    )
+  )
+
+  val nullableDataset: Dataset[SimpleStruct] = SampleSource.generate(row =>
+    SimpleStruct(
+      row,
+      if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
+    )
+  )
+
   "NullableMetric" should {
     "return 0 on correct dataset" in {
-      val nullableMetric =
-        new Nullable(
-          SampleSource.generate(row =>
-            SimpleStruct(
-              row,
-              Some(Random.alphanumeric.take(10).mkString)
-            )
-          ),
-          col("name")
-        )
-      nullableMetric.collect match {
+      val metric: Nullable[SimpleStruct] = new Nullable(col("name"))
+      metric.collect(correctDataset) match {
         case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 0
         case Failure(_: Throwable)                   => None
       }
     }
     "return 100 on spoiled dataset" in {
-      val nullableMetric =
-        new Nullable(
-          SampleSource.generate(row =>
-            SimpleStruct(
-              row,
-              if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
-            )
-          ),
-          col("name")
-        )
-      nullableMetric.collect match {
+      val metric: Nullable[SimpleStruct] = new Nullable(col("name"))
+      metric.collect(nullableDataset) match {
         case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 100
         case Failure(_: Throwable)                   => None
       }
@@ -51,35 +47,15 @@ final class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
 
   "SizeMetric" should {
     "return 0 on correct dataset" in {
-      val sizeMetric = new Size(
-        SampleSource.generate(row =>
-          SimpleStruct(
-            row,
-            if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
-          )
-        ),
-        col("name"),
-        0,
-        1000
-      )
-      sizeMetric.collect match {
+      val metric: Size[SimpleStruct] = new Size(col("name"), 0, 1000)
+      metric.collect(correctDataset) match {
         case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 0
         case Failure(_: Throwable)                   => None
       }
     }
     "return 900 on overflow dataset" in {
-      val sizeMetric = new Size(
-        SampleSource.generate(row =>
-          SimpleStruct(
-            row,
-            if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
-          )
-        ),
-        col("name"),
-        0,
-        100
-      )
-      sizeMetric.collect match {
+      val metric: Size[SimpleStruct] = new Size(col("name"), 0, 100)
+      metric.collect(correctDataset) match {
         case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 900
         case Failure(_: Throwable)                   => None
       }

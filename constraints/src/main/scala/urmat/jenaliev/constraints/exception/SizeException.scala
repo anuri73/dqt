@@ -1,3 +1,5 @@
 package urmat.jenaliev.constraints.exception
 
-final class SizeException extends Exception {}
+import urmat.jenaliev.core.ConstraintException
+
+final class SizeException extends ConstraintException {}
