@@ -57,7 +57,7 @@ lazy val core = (project in file("core"))
     parallelExecution := true,
     Defaults.itSettings,
     // ParallelExecution: By default, each test class is mapped to its own task and sbt executes tasks in parallel
-    IntegrationTest / parallelExecution := false, // disabled in IntegrationTest, due to race condition
+    IntegrationTest / parallelExecution := false,
     IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
     commonSettings,
     crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
@@ -73,7 +73,7 @@ lazy val metrics = (project in file("metrics"))
   .settings(
     parallelExecution := true,
     Defaults.itSettings,
-    IntegrationTest / parallelExecution := false, // disabled in IntegrationTest, due to race condition
+    IntegrationTest / parallelExecution := false,
     IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
     commonSettings,
     crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
@@ -84,3 +84,20 @@ lazy val metrics = (project in file("metrics"))
     )
   )
   .dependsOn(core)
+
+lazy val constraints = (project in file("constraints"))
+  .configs(IntegrationTest.extend(Test))
+  .settings(
+    parallelExecution := true,
+    Defaults.itSettings,
+    IntegrationTest / parallelExecution := false,
+    IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
+    commonSettings,
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    libraryDependencies ++= Seq(
+      Dependency.sparkCore(Version.spark.value) % Provided,
+      Dependency.sparkSql(Version.spark.value)  % Provided,
+      Dependency.scalaTest                      % "test, it"
+    )
+  )
+  .dependsOn(core, metrics)

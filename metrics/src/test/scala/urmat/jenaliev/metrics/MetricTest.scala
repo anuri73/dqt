@@ -10,7 +10,7 @@ import urmat.jenaliev.core.struct.SimpleStruct
 
 import scala.util.{Failure, Random, Success}
 
-class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
+final class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
 
   object SampleSource extends SimpleStructSource(Constants.DefaultRecordAmount)
 
