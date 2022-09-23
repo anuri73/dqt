@@ -115,7 +115,9 @@ lazy val callbacks = (project in file("callbacks"))
       Dependency.sparkCore(Version.spark.value) % Provided,
       Dependency.sparkSql(Version.spark.value)  % Provided,
       Dependency.scalaTest                      % "test, it",
-      Dependency.scalaMock                      % Provided
+      Dependency.scalaMock                      % Provided,
+      Dependency.typesafeLogging,
+      Dependency.logBack
     )
   )
   .dependsOn(core, constraints)

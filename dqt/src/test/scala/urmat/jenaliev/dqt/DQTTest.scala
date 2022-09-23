@@ -2,14 +2,16 @@ package urmat.jenaliev.dqt
 
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.functions.col
+import org.mockito.ArgumentMatchers.any
+import org.mockito.MockitoSugar
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import urmat.jenaliev.callbacks.LogIt
 import urmat.jenaliev.constraints.NotNullConstraint
+import urmat.jenaliev.core.SparkTest
 import urmat.jenaliev.core.source.{IntSource, SimpleStructSource}
 import urmat.jenaliev.core.struct.SimpleStruct
-import urmat.jenaliev.core.{Callback, Constraint, SparkTest}
-import org.mockito.MockitoSugar
+
 import scala.util.Random
 
 final class DQTTest extends AnyWordSpecLike with Matchers with SparkTest with MockitoSugar {
@@ -33,18 +35,36 @@ final class DQTTest extends AnyWordSpecLike with Matchers with SparkTest with Mo
   )
 
   "DQT" should {
-    "call LogIt callback" in {
+    "be valid on a correct dataset" in {
+
+      import spark.implicits._
 
       val logIt = mock[LogIt[SimpleStruct]]
-      verify(logIt, times(1))
 
       val dqt: DQT[SimpleStruct] = new DQT(
         correctDataset,
-        Seq[Constraint[SimpleStruct]](new NotNullConstraint(col("name"))),
-        Seq[Callback[SimpleStruct]](logIt)
+        Seq(new NotNullConstraint(col("name"))),
+        Seq(logIt)
       )
       dqt.run()
 
+      verify(logIt, never).call(spark.emptyDataset[SimpleStruct])
+
+    }
+
+    "log data on invalid dataset" in {
+
+      val logIt = mock[LogIt[SimpleStruct]]
+
+      val dqt: DQT[SimpleStruct] = new DQT(
+        nullableDataset,
+        Seq(new NotNullConstraint(col("name"))),
+        Seq(logIt)
+      )
+
+      dqt.run()
+
+      verify(logIt, atLeastOnce).call(any[Dataset[SimpleStruct]])
     }
   }
 }

@@ -1,5 +1,5 @@
+import sbt.Keys._
 import sbt._
-import Keys._
 
 object Version {
   // cannot upgrade to 2.11.12 as `loadFiles()` in `ILoop` was removed in scala 2.11.12 which breaks Apache Spark
@@ -26,6 +26,7 @@ object Version {
   val scalaTest       = "3.3.0-SNAP3"
   val scalaXml        = "1.2.0"
   val typesafeLogging = "3.9.2"
+  val logBack         = "1.2.11"
   val scallop         = "3.4.0"
   val scalajHttp      = "2.4.2"
   val pureConfig      = "0.12.3"

@@ -1,18 +1,14 @@
-import Version._
 import sbt._
-import Keys._
 
 object Dependency {
-  def sparkCore(sparkVersion: String)     = "org.apache.spark" %% "spark-core"     % sparkVersion
-  def sparkSql(sparkVersion: String)      = "org.apache.spark" %% "spark-sql"      % sparkVersion
-  def sparkHive(sparkVersion: String)     = "org.apache.spark" %% "spark-hive"     % sparkVersion
-  def sparkCatalyst(sparkVersion: String) = "org.apache.spark" %% "spark-catalyst" % sparkVersion
-  def circeCore(circeVersion: String)     = "io.circe"         %% "circe-core"     % circeVersion
-  def circeGeneric(circeVersion: String)  = "io.circe"         %% "circe-generic"  % circeVersion
-  def circeParser(circeVersion: String)   = "io.circe"         %% "circe-parser"   % circeVersion
-  def circeLiteral(circeVersion: String)  = "io.circe"         %% "circe-literal"  % circeVersion
-
-  def enkiDep(enkiVersion: String) = "ru.sberbank.bigdata.products" %% "enki" % enkiVersion
+  def sparkCore(sparkVersion: String): ModuleID     = "org.apache.spark" %% "spark-core"     % sparkVersion
+  def sparkSql(sparkVersion: String): ModuleID      = "org.apache.spark" %% "spark-sql"      % sparkVersion
+  def sparkHive(sparkVersion: String): ModuleID     = "org.apache.spark" %% "spark-hive"     % sparkVersion
+  def sparkCatalyst(sparkVersion: String): ModuleID = "org.apache.spark" %% "spark-catalyst" % sparkVersion
+  def circeCore(circeVersion: String): ModuleID     = "io.circe"         %% "circe-core"     % circeVersion
+  def circeGeneric(circeVersion: String): ModuleID  = "io.circe"         %% "circe-generic"  % circeVersion
+  def circeParser(circeVersion: String): ModuleID   = "io.circe"         %% "circe-parser"   % circeVersion
+  def circeLiteral(circeVersion: String): ModuleID  = "io.circe"         %% "circe-literal"  % circeVersion
 
   def http4s(name: String): ModuleID = "org.http4s" %% s"http4s-$name" % Version.http4s
 
@@ -21,6 +17,7 @@ object Dependency {
   val mockitoScala    = "org.mockito"                  %% "mockito-scala"    % Version.mockitoScala
   val scalaXml        = "org.scala-lang.modules"       %% "scala-xml"        % Version.scalaXml
   val typesafeLogging = "com.typesafe.scala-logging"   %% "scala-logging"    % Version.typesafeLogging
+  val logBack         = "ch.qos.logback"                % "logback-classic"  % Version.logBack
   val scallop         = "org.rogach"                   %% "scallop"          % Version.scallop
   val scalajHttp      = "org.scalaj"                   %% "scalaj-http"      % Version.scalajHttp
   val pureConfig      = "com.github.pureconfig"        %% "pureconfig"       % Version.pureConfig
