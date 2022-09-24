@@ -17,14 +17,24 @@ final class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
   val correctDataset: Dataset[SimpleStruct] = SampleSource.generate(row =>
     SimpleStruct(
       row,
-      Some(Random.alphanumeric.take(10).mkString)
+      Some(Random.alphanumeric.take(10).mkString),
+      row
     )
   )
 
   val nullableDataset: Dataset[SimpleStruct] = SampleSource.generate(row =>
     SimpleStruct(
       row,
-      if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
+      if (row < 100) None else Some(Random.alphanumeric.take(10).mkString),
+      row
+    )
+  )
+
+  val valueOverflowDataset: Dataset[SimpleStruct] = SampleSource.generate(row =>
+    SimpleStruct(
+      row,
+      if (row < 100) None else Some(Random.alphanumeric.take(10).mkString),
+      1000000 + row
     )
   )
 
@@ -57,6 +67,23 @@ final class MetricTest extends AnyWordSpecLike with Matchers with SparkTest {
       val metric: Size[SimpleStruct] = new Size(col("name"), 0, 100)
       metric.collect(correctDataset) match {
         case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 900
+        case Failure(_: Throwable)                   => None
+      }
+    }
+  }
+
+  "ValueRangeMetric" should {
+    "return 0 on correct dataset" in {
+      val metric: ValueRange[SimpleStruct] = new ValueRange(col("value"), 0, 1000)
+      metric.collect(correctDataset) match {
+        case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 0
+        case Failure(_: Throwable)                   => None
+      }
+    }
+    "return 1000 on overflow dataset" in {
+      val metric: ValueRange[SimpleStruct] = new ValueRange(col("value"), 0, 1000)
+      metric.collect(valueOverflowDataset) match {
+        case Success(dataset: Dataset[SimpleStruct]) => dataset.count() shouldBe 1000
         case Failure(_: Throwable)                   => None
       }
     }

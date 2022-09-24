@@ -23,14 +23,16 @@ final class DQTTest extends AnyWordSpecLike with Matchers with SparkTest with Mo
   val correctDataset: Dataset[SimpleStruct] = SampleSource.generate(row =>
     SimpleStruct(
       row,
-      Some(Random.alphanumeric.take(10).mkString)
+      Some(Random.alphanumeric.take(10).mkString),
+      row
     )
   )
 
   val nullableDataset: Dataset[SimpleStruct] = SampleSource.generate(row =>
     SimpleStruct(
       row,
-      if (row < 100) None else Some(Random.alphanumeric.take(10).mkString)
+      if (row < 100) None else Some(Random.alphanumeric.take(10).mkString),
+      row
     )
   )
 

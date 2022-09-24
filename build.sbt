@@ -1,3 +1,5 @@
+import sbt.Keys._
+
 // Seq of 'wartremover' checks, causing compilation fail if found
 lazy val warts = Seq(
   "-P:wartremover:traverser:org.wartremover.warts.FinalCaseClass", // All case classes should be final
@@ -23,7 +25,6 @@ lazy val compilerFlags = Seq(
     "-Xlint:inaccessible",           // Warn about inaccessible types in method signatures.
     "-Xlint:infer-any",              // Warn when a type argument is inferred to be `Any`.
     "-Xlint:missing-interpolator",   // A string literal appears to be missing an interpolator id.
-    "-Xlint:nullary-override",       // Warn when non-nullary `def f()' overrides nullary `def f'.
     "-Xlint:nullary-unit",           // Warn when nullary methods return Unit.
     "-Xlint:option-implicit",        // Option.apply used implicit view.
     "-Xlint:package-object-classes", // Class or object defined in package object.
@@ -43,24 +44,23 @@ lazy val compilerFlags = Seq(
 lazy val commonSettings = Defaults.coreDefaultSettings ++ compilerFlags ++ Seq(
   scalaVersion := Version.scala2v11,
   organization := "urmat.jenaliev",
-  // avoid java.lang.NullPointerException at okhttp3.JavaNetAuthenticator.authenticate when downloading dependencies
   updateOptions := updateOptions.value.withGigahorse(false),
   assembly / assemblyOption := (assembly / assemblyOption).value.copy(includeScala = false),
-  // assembly / mainClass := Some("ru.sberbank.bigdata.enki.ctl.Main"), // Avoid multiple main classes detected
-  Test / testOptions += Tests.Argument("-oF"), // Verbose test output (for Jenkins)
-  run / fork := true
+  Test / testOptions += Tests.Argument("-oF"),
+  run / fork := true,
+  developers := Environment.developers
 )
 
 lazy val core = (project in file("core"))
   .configs(IntegrationTest.extend(Test))
   .settings(
     parallelExecution := true,
+    moduleName := "dqt-core",
     Defaults.itSettings,
-    // ParallelExecution: By default, each test class is mapped to its own task and sbt executes tasks in parallel
     IntegrationTest / parallelExecution := false,
     IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
     commonSettings,
-    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12, Version.scala2v13),
     libraryDependencies ++= Seq(
       Dependency.sparkCore(Version.spark.value) % Provided,
       Dependency.sparkSql(Version.spark.value)  % Provided,
@@ -72,11 +72,12 @@ lazy val metrics = (project in file("metrics"))
   .configs(IntegrationTest.extend(Test))
   .settings(
     parallelExecution := true,
+    moduleName := "dqt-metrics",
     Defaults.itSettings,
     IntegrationTest / parallelExecution := false,
     IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
     commonSettings,
-    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12, Version.scala2v13),
     libraryDependencies ++= Seq(
       Dependency.sparkCore(Version.spark.value) % Provided,
       Dependency.sparkSql(Version.spark.value)  % Provided,
@@ -89,11 +90,12 @@ lazy val constraints = (project in file("constraints"))
   .configs(IntegrationTest.extend(Test))
   .settings(
     parallelExecution := true,
+    moduleName := "dqt-constraints",
     Defaults.itSettings,
     IntegrationTest / parallelExecution := false,
     IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
     commonSettings,
-    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12, Version.scala2v13),
     libraryDependencies ++= Seq(
       Dependency.sparkCore(Version.spark.value) % Provided,
       Dependency.sparkSql(Version.spark.value)  % Provided,
@@ -106,11 +108,12 @@ lazy val callbacks = (project in file("callbacks"))
   .configs(IntegrationTest.extend(Test))
   .settings(
     parallelExecution := true,
+    moduleName := "dqt-callbacks",
     Defaults.itSettings,
     IntegrationTest / parallelExecution := false,
     IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
     commonSettings,
-    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12, Version.scala2v13),
     libraryDependencies ++= Seq(
       Dependency.sparkCore(Version.spark.value) % Provided,
       Dependency.sparkSql(Version.spark.value)  % Provided,
@@ -126,11 +129,12 @@ lazy val dqt = (project in file("dqt"))
   .configs(IntegrationTest.extend(Test))
   .settings(
     parallelExecution := true,
+    moduleName := "dqt",
     Defaults.itSettings,
     IntegrationTest / parallelExecution := false,
     IntegrationTest / test := (IntegrationTest / test).dependsOn(Test / compile).value,
     commonSettings,
-    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12),
+    crossScalaVersions := Seq(Version.scala2v11, Version.scala2v12, Version.scala2v13),
     libraryDependencies ++= Seq(
       Dependency.sparkCore(Version.spark.value) % Provided,
       Dependency.sparkSql(Version.spark.value)  % Provided,
@@ -139,3 +143,5 @@ lazy val dqt = (project in file("dqt"))
     )
   )
   .dependsOn(core, constraints, callbacks)
+
+lazy val root = dqt

@@ -5,11 +5,13 @@ object Version {
   // cannot upgrade to 2.11.12 as `loadFiles()` in `ILoop` was removed in scala 2.11.12 which breaks Apache Spark
   val scala2v11 = "2.11.8"
   val scala2v12 = "2.12.10"
+  val scala2v13 = "2.13.9"
 
   val spark = Def.setting {
     scalaVersion.value match {
       case `scala2v11` => "2.2.0"
       case `scala2v12` => "2.4.4"
+      case `scala2v13` => "3.2.2"
     }
   }
 
@@ -18,6 +20,7 @@ object Version {
     scalaVersion.value match {
       case `scala2v11` => "0.11.1"
       case `scala2v12` => "0.13.0"
+      case `scala2v13` => "0.13.0"
     }
   }
 
